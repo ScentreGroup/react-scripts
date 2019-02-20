@@ -433,6 +433,13 @@ module.exports = function(webpackEnv) {
             },
             // Scentre Group loader config starts here.
             {
+              test: /\.inline\.svg$/,
+              loader: 'svg-react-loader',
+              options: {
+                publicPath,
+              },
+            },
+            {
               test: cssRegex,
               use: getStyleLoaders({
                 importLoaders: 1,
