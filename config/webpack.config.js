@@ -446,26 +446,32 @@ module.exports = function(webpackEnv) {
             },
             {
               test: cssRegex,
+              exclude: paths.appSrc,
               use: getStyleLoaders({
-                importLoaders: 1,
+                importLoaders: 2,
+                modules: true,
                 sourceMap: isEnvProduction
                   ? shouldUseSourceMap
                   : isEnvDevelopment,
                 includePaths: [
-                  paths.appSrc,
                   path.join(paths.appNodeModules, 'ui')
                 ]
               }),
             },
             {
               test: sassRegex,
+              exclude: paths.appSrc,
               use: [
+                'style-loader',
                 {
                   loader: 'css-loader',
                   options: {
                     importLoaders: 2,
                     modules: true,
-                    getLocalIdent: getCSSModuleLocalIdent
+                    getLocalIdent: getCSSModuleLocalIdent,
+                    includePaths: [
+                      path.join(paths.appNodeModules, 'ui')
+                    ]
                   }
                 },
                 {
@@ -473,11 +479,20 @@ module.exports = function(webpackEnv) {
                   options: {
                     data: "@import 'themes/westfield';",
                     includePaths: [
-                      paths.appSrc,
                       path.join(paths.appNodeModules, 'ui')
                     ]
                   }
-                }
+                },
+                {
+                  loader: require.resolve('postcss-loader'),
+                  options: {
+                    parser: 'postcss-scss',
+                    plugins: () => [
+                      require('postcss-flexbugs-fixes'),
+                      require('autoprefixer')
+                    ],
+                  },
+                },
               ],
             },
             // Scentre Group loader config ends here.
@@ -489,72 +504,72 @@ module.exports = function(webpackEnv) {
             // to a file, but in development "style" loader enables hot editing
             // of CSS.
             // By default we support CSS Modules with the extension .module.css
-            // {
-            //   test: cssRegex,
-            //   exclude: cssModuleRegex,
-            //   use: getStyleLoaders({
-            //     importLoaders: 1,
-            //     sourceMap: isEnvProduction
-            //       ? shouldUseSourceMap
-            //       : isEnvDevelopment,
-            //   }),
-            //   // Don't consider CSS imports dead code even if the
-            //   // containing package claims to have no side effects.
-            //   // Remove this when webpack adds a warning or an error for this.
-            //   // See https://github.com/webpack/webpack/issues/6571
-            //   sideEffects: true,
-            // },
+            {
+              test: cssRegex,
+              exclude: cssModuleRegex,
+              use: getStyleLoaders({
+                importLoaders: 1,
+                sourceMap: isEnvProduction
+                  ? shouldUseSourceMap
+                  : isEnvDevelopment,
+              }),
+              // Don't consider CSS imports dead code even if the
+              // containing package claims to have no side effects.
+              // Remove this when webpack adds a warning or an error for this.
+              // See https://github.com/webpack/webpack/issues/6571
+              sideEffects: true,
+            },
             // Adds support for CSS Modules (https://github.com/css-modules/css-modules)
             // using the extension .module.css
-            // {
-            //   test: cssModuleRegex,
-            //   use: getStyleLoaders({
-            //     importLoaders: 1,
-            //     sourceMap: isEnvProduction
-            //      ? shouldUseSourceMap
-            //      : isEnvDevelopment,
-            //     modules: true,
-            //     getLocalIdent: getCSSModuleLocalIdent
-            //   })
-            // },
+            {
+              test: cssModuleRegex,
+              use: getStyleLoaders({
+                importLoaders: 1,
+                sourceMap: isEnvProduction
+                 ? shouldUseSourceMap
+                 : isEnvDevelopment,
+                modules: true,
+                getLocalIdent: getCSSModuleLocalIdent
+              })
+            },
             // Opt-in support for SASS (using .scss or .sass extensions).
             // By default we support SASS Modules with the
             // extensions .module.scss or .module.sass
-            // {
-            //   test: sassRegex,
-            //   exclude: sassModuleRegex,
-            //   use: getStyleLoaders(
-            //     {
-            //       importLoaders: 2,
-            //       sourceMap: isEnvProduction
-            //         ? shouldUseSourceMap
-            //         : isEnvDevelopment,
-            //     },
-            //     'sass-loader'
-            //   ),
-            //   // Don't consider CSS imports dead code even if the
-            //   // containing package claims to have no side effects.
-            //   // Remove this when webpack adds a warning or an error for this.
-            //   // See https://github.com/webpack/webpack/issues/6571
-            //   sideEffects: true,
-            // },
+            {
+              test: sassRegex,
+              exclude: sassModuleRegex,
+              use: getStyleLoaders(
+                {
+                  importLoaders: 2,
+                  sourceMap: isEnvProduction
+                    ? shouldUseSourceMap
+                    : isEnvDevelopment,
+                },
+                'sass-loader'
+              ),
+              // Don't consider CSS imports dead code even if the
+              // containing package claims to have no side effects.
+              // Remove this when webpack adds a warning or an error for this.
+              // See https://github.com/webpack/webpack/issues/6571
+              sideEffects: true,
+            },
             // Adds support for CSS Modules, but using SASS
             // using the extension .module.scss or .module.sass
             // "file" loader makes sure those assets get served by WebpackDevServer.
-            // {
-            //   test: sassModuleRegex,
-            //   use: getStyleLoaders(
-            //     {
-            //       importLoaders: 2,
-            //       sourceMap: isEnvProduction
-            //         ? shouldUseSourceMap
-            //         : isEnvDevelopment,
-            //       modules: true,
-            //       getLocalIdent: getCSSModuleLocalIdent,
-            //     },
-            //     'sass-loader'
-            //   )
-            // },
+            {
+              test: sassModuleRegex,
+              use: getStyleLoaders(
+                {
+                  importLoaders: 2,
+                  sourceMap: isEnvProduction
+                    ? shouldUseSourceMap
+                    : isEnvDevelopment,
+                  modules: true,
+                  getLocalIdent: getCSSModuleLocalIdent,
+                },
+                'sass-loader'
+              )
+            },
             // When you `import` an asset, you get its (virtual) filename.
             // In production, they would get copied to the `build` folder.
             // This loader doesn't use a "test" so it will catch all modules
