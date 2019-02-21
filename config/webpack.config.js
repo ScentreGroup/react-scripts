@@ -467,6 +467,9 @@ module.exports = function(webpackEnv) {
                   loader: 'css-loader',
                   options: {
                     importLoaders: 2,
+                    sourceMap: isEnvProduction
+                      ? shouldUseSourceMap
+                      : isEnvDevelopment,
                     modules: true,
                     getLocalIdent: getCSSModuleLocalIdent,
                     includePaths: [
@@ -478,6 +481,10 @@ module.exports = function(webpackEnv) {
                   loader: 'sass-loader',
                   options: {
                     data: "@import 'themes/westfield';",
+                    sourceMap: isEnvProduction
+                      ? shouldUseSourceMap
+                      : isEnvDevelopment,
+                    getLocalIdent: getCSSModuleLocalIdent,
                     includePaths: [
                       path.join(paths.appNodeModules, 'ui')
                     ]
