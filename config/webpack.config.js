@@ -433,6 +433,11 @@ module.exports = function(webpackEnv) {
             },
             // Scentre Group loader config starts here.
             {
+              test: /\.graphql$/,
+              exclude: /node_modules/,
+              loader: 'graphql-tag/loader',
+            },
+            {
               test: /\.inline\.svg$/,
               loader: 'svg-react-loader',
               options: {
